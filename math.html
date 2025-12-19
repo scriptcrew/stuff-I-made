@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Air-Breathing Propulsion Simulation</title>
+  <style>
+    body {
+      font-family: "Times New Roman", Times, serif;
+  
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #0b3d91;
+    }
+
+    .container {
+      max-width: 800px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .control {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+    }
+
+    input,
+    button,
+    select {
+      font-family: "Times New Roman", Times, serif;
+      width: 100%;
+    }
+
+    .output {
+      background: #eef2f7;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 20px;
+    }
+
+    .value {
+      font-size: 1.2em;
+      color: #1a4fa3;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Air-Breathing Propulsion Math</h1>
+ 
+
+  <!-- Controls -->
+  <div class="control">
+    <label>Mass Flow Rate (kg/s)</label>
+    <input type="number" id="massFlow" value="50">
+  </div>
+
+  <div class="control">
+    <label>Exhaust Velocity (m/s)</label>
+    <input type="number" id="exhaustVelocity" value="1200">
+  </div>
+
+  <div class="control">
+    <label>Flight Velocity (m/s)</label>
+    <input type="range" id="flightVelocity" min="0" max="400" value="200">
+    <span id="flightVelocityValue">200</span> m/s
+  </div>
+
+  <div class="control">
+    <label>Ambient Temperature (K)</label>
+    <input type="number" id="temperature" value="288">
+  </div>
+
+  <div class="control">
+    <label>Compressor Inlet Pressure (Pa)</label>
+    <input type="number" id="pressureIn" value="101325">
+  </div>
+
+  <div class="control">
+    <label>Compressor Outlet Pressure (Pa)</label>
+    <input type="number" id="pressureOut" value="405300">
+  </div>
+
+  <!-- Outputs -->
+  <div class="output">
+    <p>Thrust: <span class="value" id="thrustOutput"></span> N</p>
+    <p>Mach Number: <span class="value" id="machOutput"></span></p>
+    <p>Pressure Ratio: <span class="value" id="prOutput"></span></p>
+  </div>
+</div>
+
+<script>
+  // Physics constants
+  const gamma = 1.4;
+  const R = 287;
+
+  function calculateThrust(mdot, Ve, V0) {
+    return mdot * (Ve - V0);
+  }
+
+  function calculateMachNumber(velocity, temperature) {
+    const speedOfSound = Math.sqrt(gamma * R * temperature);
+    return velocity / speedOfSound;
+  }
+
+  function calculatePressureRatio(Pout, Pin) {
+    return Pout / Pin;
+  }
+
+  function updateSimulation() {
+    const mdot = parseFloat(document.getElementById("massFlow").value);
+    const Ve = parseFloat(document.getElementById("exhaustVelocity").value);
+    const V0 = parseFloat(document.getElementById("flightVelocity").value);
+    const T = parseFloat(document.getElementById("temperature").value);
+    const Pin = parseFloat(document.getElementById("pressureIn").value);
+    const Pout = parseFloat(document.getElementById("pressureOut").value);
+
+    document.getElementById("flightVelocityValue").textContent = V0;
+
+    const thrust = calculateThrust(mdot, Ve, V0);
+    const mach = calculateMachNumber(V0, T);
+    const pr = calculatePressureRatio(Pout, Pin);
+
+    document.getElementById("thrustOutput").textContent = thrust.toFixed(1);
+    document.getElementById("machOutput").textContent = mach.toFixed(2);
+    document.getElementById("prOutput").textContent = pr.toFixed(2);
+  }
+
+  document.querySelectorAll("input").forEach(input => {
+    input.addEventListener("input", updateSimulation);
+  });
+
+  updateSimulation();
+</script>
+
+</body>
+</html>
