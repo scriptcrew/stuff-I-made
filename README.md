@@ -1,1 +1,1 @@
-# stuff-I-made
+# please read the READ file
